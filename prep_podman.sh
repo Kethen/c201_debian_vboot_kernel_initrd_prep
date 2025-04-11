@@ -20,4 +20,5 @@ podman run \
 	-v ./prep_podman.sh:/work_dir/prep_podman.sh \
 	-v ./prep.sh:/work_dir/prep.sh \
 	-w /work_dir \
-	$IMAGE_TAG
+	$IMAGE_TAG \
+	bash prep.sh
