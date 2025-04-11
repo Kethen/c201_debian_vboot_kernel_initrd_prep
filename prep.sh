@@ -1,0 +1,69 @@
+# steps from https://wiki.debian.org/InstallingDebianOn/Asus/C201
+
+set -xe
+
+cat > kernel-initrd.its << EOF
+/dts-v1/;
+
+/ {
+    description = "Linux kernel image with one or more FDT blobs";
+    #address-cells = <1>;
+    images {
+        kernel@1{
+            description = "vmlinuz";
+            data = /incbin/("$(ls /boot/vmlinuz-*-armmp | sort -r | head -n 1)");
+            type = "kernel_noload";
+            arch = "arm";
+            os = "linux";
+            compression = "none";
+            hash@1{
+                algo = "sha1";
+            };
+        };
+        fdt@1{
+            description = "dtb";
+            data = /incbin/("$(ls /usr/lib/linux-image-*-armmp/rk3288-veyron-speedy.dtb | sort -r | head -n 1)");
+            type = "flat_dt";
+            arch = "arm";
+            compression = "none";
+            hash@1{
+                algo = "sha1";
+            };
+        };
+        ramdisk@1{
+            description = "initrd.img";
+            data = /incbin/("$(ls /boot/initrd.img-*-armmp | sort -r | head -n 1)");
+            type = "ramdisk";
+            arch = "arm";
+            os = "linux";
+            compression = "none";
+            hash@1{
+                algo = "sha1";
+            };
+        };
+    };
+    configurations {
+        default = "conf@1";
+        conf@1{
+            kernel = "kernel@1";
+            fdt = "fdt@1";
+                ramdisk = "ramdisk@1";
+        };
+    };
+};
+EOF
+#echo "console=tty1 debug noinitrd root=/dev/mmcblk0p1 rw rootwait" > cmdline
+echo "console=tty1 root=/dev/mmcblk0p1" > cmdline
+
+mkimage -f kernel-initrd.its kernel-initrd.itb
+
+futility --debug vbutil_kernel \
+    --arch arm \
+    --version 1 \
+    --keyblock /usr/share/vboot/devkeys/kernel.keyblock \
+    --signprivate /usr/share/vboot/devkeys/kernel_data_key.vbprivk \
+    --bootloader cmdline \
+    --config cmdline \
+    --vmlinuz kernel-initrd.itb \
+    --pack vmlinuz_initrd.signed
+
