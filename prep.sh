@@ -2,6 +2,8 @@
 
 set -xe
 
+cp -r $(ls -d /usr/lib/modules/* | sort -r | head -n 1) ./
+
 cat > kernel-initrd.its << EOF
 /dts-v1/;
 
@@ -53,7 +55,7 @@ cat > kernel-initrd.its << EOF
 };
 EOF
 #echo "console=tty1 debug noinitrd root=/dev/mmcblk0p1 rw rootwait" > cmdline
-echo "console=tty1 root=/dev/mmcblk0p1" > cmdline
+echo "console=tty1 root=${ROOT}" > cmdline
 
 mkimage -f kernel-initrd.its kernel-initrd.itb
 
