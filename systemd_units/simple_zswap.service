@@ -1,0 +1,11 @@
+[Unit]
+Description=simple zswap service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=bash -c "modprobe -v zram; zramctl -s $(cat /proc/meminfo  | grep MemTotal | awk '{print $2}')K /dev/zram0 -a zstd; mkswap /dev/zram0; swapon /dev/zram0"
+ExecStop=bash -c "swapoff /dev/zram0; modprobe -rv zram"
+
+[Install]
+WantedBy=multi-user.target

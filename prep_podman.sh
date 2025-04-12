@@ -28,10 +28,12 @@ podman run \
 	-v ./prep.sh:/work_dir/prep.sh \
 	-v ./mkc201vboot:/work_dir/mkc201vboot:ro \
 	-v ./firmware:/work_dir/firmware:ro \
+	-v ./systemd_units:/work_dir/systemd_units:ro \
 	-w /work_dir \
 	--env ROOT="$ROOT" \
 	--env ROOTFSTAR="$ROOTFSTAR" \
 	--env ROOTFS="$ROOTFS" \
 	--env ROOTFSOPT="$ROOTFSOPT" \
+	--env USE_KDE="$USE_KDE" \
 	localhost/$IMAGE_TAG \
 	bash prep.sh

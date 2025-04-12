@@ -41,5 +41,11 @@ EOF
 		apt install -y task-gnome-desktop
 	fi
 
+	cp systemd_units/simple_zswap.service /usr/lib/systemd/system/simple_zswap.service
+	sudo ln -s /usr/lib/systemd/system/simple_zswap.service /usr/lib/systemd/system/multi-user.target.wants/simple_zswap.service
+
+	# polkit bug..?
+	chmod 555 /usr/share/polkit-1/rules.d
+
 	tar -C / --exclude='./work_dir/*' --exclude='./dev/*' --exclude='./sys/*' --exclude='./proc/*' -cO . -f /work_dir/rootfs.tar
 fi
