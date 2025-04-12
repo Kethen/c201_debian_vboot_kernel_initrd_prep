@@ -1,71 +1,45 @@
-# steps from https://wiki.debian.org/InstallingDebianOn/Asus/C201
-
 set -xe
 
-cp -r $(ls -d /usr/lib/modules/* | sort -r | head -n 1) ./
+cp mkc201vboot /usr/bin
+chmod 755 /usr/bin/mkc201vboot
 
-cat > kernel-initrd.its << EOF
-/dts-v1/;
+mkc201vboot
 
-/ {
-    description = "Linux kernel image with one or more FDT blobs";
-    #address-cells = <1>;
-    images {
-        kernel@1{
-            description = "vmlinuz";
-            data = /incbin/("$(ls /boot/vmlinuz-*-armmp | sort -r | head -n 1)");
-            type = "kernel_noload";
-            arch = "arm";
-            os = "linux";
-            compression = "none";
-            hash@1{
-                algo = "sha1";
-            };
-        };
-        fdt@1{
-            description = "dtb";
-            data = /incbin/("$(ls /usr/lib/linux-image-*-armmp/rk3288-veyron-speedy.dtb | sort -r | head -n 1)");
-            type = "flat_dt";
-            arch = "arm";
-            compression = "none";
-            hash@1{
-                algo = "sha1";
-            };
-        };
-        ramdisk@1{
-            description = "initrd.img";
-            data = /incbin/("$(ls /boot/initrd.img-*-armmp | sort -r | head -n 1)");
-            type = "ramdisk";
-            arch = "arm";
-            os = "linux";
-            compression = "none";
-            hash@1{
-                algo = "sha1";
-            };
-        };
-    };
-    configurations {
-        default = "conf@1";
-        conf@1{
-            kernel = "kernel@1";
-            fdt = "fdt@1";
-                ramdisk = "ramdisk@1";
-        };
-    };
-};
+rm -rf modules
+mkdir modules
+
+cp -r $(ls -d /usr/lib/modules/* | sort -r | head -n 1) ./modules/
+
+if [ "$ROOTFSTAR" == "true" ]
+then
+	useradd -m user
+	passwd user << EOF
+user
+user
 EOF
-#echo "console=tty1 debug noinitrd root=/dev/mmcblk0p1 rw rootwait" > cmdline
-echo "console=tty1 root=${ROOT}" > cmdline
+	
+	usermod -a -G sudo user
+	usermod -s /usr/bin/bash user
+	passwd -l root
 
-mkimage -f kernel-initrd.its kernel-initrd.itb
+	echo "$ROOT / $ROOTFS $ROOTFSOPT 0 0" > /etc/fstab
 
-futility --debug vbutil_kernel \
-    --arch arm \
-    --version 1 \
-    --keyblock /usr/share/vboot/devkeys/kernel.keyblock \
-    --signprivate /usr/share/vboot/devkeys/kernel_data_key.vbprivk \
-    --bootloader cmdline \
-    --config cmdline \
-    --vmlinuz kernel-initrd.itb \
-    --pack vmlinuz_initrd.signed
+	#cp -r firmware/* /usr/lib/firmware/ || true
+	cp firmware/brcm/brcmfmac4354-sdio.txt /usr/lib/firmware/brcm
 
+	# https://wiki.gentoo.org/wiki/ASUS_Chromebook_C201#Built-in_wifi
+	#echo "blacklist btsdio" > /etc/modprobe.d/blacklist-btsdio.conf
+
+	export DEBIAN_FRONTEND=noninteractive
+	apt update
+	apt install -y man-db
+	apt install -y bash-completion nano less firefox-esr chromium
+	if [ "$USE_KDE" == "true" ]
+	then
+		apt install -y task-kde-desktop
+	else
+		apt install -y task-gnome-desktop
+	fi
+
+	tar -C / --exclude='./work_dir/*' --exclude='./dev/*' --exclude='./sys/*' --exclude='./proc/*' -cO . -f /work_dir/rootfs.tar
+fi

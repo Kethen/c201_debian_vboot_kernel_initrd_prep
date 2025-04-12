@@ -2,3 +2,4 @@ kernel-initrd.its
 cmdline
 kernel-initrd.itb
 vmlinuz_initrd.signed
+modules/*
