@@ -37,6 +37,8 @@ EOF
 	if [ "$USE_KDE" == "true" ]
 	then
 		apt install -y task-kde-desktop
+		# oof konsole crashes, not sure when will debian fetch a newer version
+		apt install -y lxterminal
 	else
 		apt install -y task-gnome-desktop
 	fi
