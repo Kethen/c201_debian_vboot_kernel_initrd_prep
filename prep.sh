@@ -17,7 +17,6 @@ then
 user
 user
 EOF
-	
 	usermod -a -G sudo user
 	usermod -s /usr/bin/bash user
 	passwd -l root
@@ -48,6 +47,9 @@ EOF
 	else
 		apt install -y task-gnome-desktop
 	fi
+
+	# bump mesa
+	sudo apt install -y -t bookworm-backports libegl-mesa0 libgl1-mesa-dri libglapi-mesa libglx-mesa0 mesa-va-drivers mesa-vdpau-drivers mesa-vulkan-drivers
 
 	cp systemd_units/simple_zswap.service /usr/lib/systemd/system/simple_zswap.service
 	sudo ln -s /usr/lib/systemd/system/simple_zswap.service /usr/lib/systemd/system/multi-user.target.wants/simple_zswap.service
