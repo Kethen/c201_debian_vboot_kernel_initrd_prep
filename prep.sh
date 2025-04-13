@@ -33,7 +33,9 @@ EOF
 	export DEBIAN_FRONTEND=noninteractive
 	apt update
 	apt install -y man-db
-	apt install -y bash-completion nano less firefox-esr chromium
+	apt install -y bash-completion nano less
+	apt install -y lm-sensors
+	apt install -y firefox-esr chromium
 	if [ "$USE_KDE" == "true" ]
 	then
 		apt install -y task-kde-desktop
