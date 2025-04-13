@@ -3,3 +3,4 @@ cmdline
 kernel-initrd.itb
 vmlinuz_initrd.signed
 modules/*
+rootfs.tar
