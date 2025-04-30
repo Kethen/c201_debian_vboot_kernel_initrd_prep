@@ -33,7 +33,7 @@ EOF
 	export DEBIAN_FRONTEND=noninteractive
 	apt update
 	apt install -y man-db
-	apt install -y bash-completion nano less
+	apt install -y bash-completion nano less tmux
 	apt install -y lm-sensors
 	apt install -y firefox-esr chromium
 	apt install -y iputils-ping bind9-dnsutils traceroute mtr iperf3 iperf ncat
