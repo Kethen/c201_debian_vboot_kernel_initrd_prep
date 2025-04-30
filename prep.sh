@@ -22,7 +22,7 @@ EOF
 	usermod -s /usr/bin/bash user
 	passwd -l root
 
-	echo "$ROOT / $ROOTFS $ROOTFSOPT 0 0" > /etc/fstab
+	echo "$ROOT / $ROOTFS $ROOTFSOPT 0 1" > /etc/fstab
 
 	#cp -r firmware/* /usr/lib/firmware/ || true
 	cp firmware/brcm/brcmfmac4354-sdio.txt /usr/lib/firmware/brcm
@@ -36,6 +36,8 @@ EOF
 	apt install -y bash-completion nano less
 	apt install -y lm-sensors
 	apt install -y firefox-esr chromium
+	apt install -y iputils-ping bind9-dnsutils traceroute mtr iperf3 iperf ncat
+	apt install -y cpio tar zstd gzip pbzip2 p7zip-full bzip2
 	if [ "$USE_KDE" == "true" ]
 	then
 		apt install -y task-kde-desktop
