@@ -36,7 +36,7 @@ EOF
 	apt install -y bash-completion nano less tmux openssh-server openssh-client
 	apt install -y lm-sensors
 	apt install -y firefox-esr chromium
-	apt install -y iputils-ping bind9-dnsutils traceroute mtr iperf3 iperf ncat
+	apt install -y iputils-ping bind9-dnsutils traceroute mtr iperf3 iperf ncat iproute2
 	apt install -y cpio tar zstd gzip pbzip2 p7zip-full bzip2
 	apt install -y podman
 	apt install -y apt-file
